@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { createAccountInput } from "./dtos/create-account.dto";
 import { User } from "./entities/user.entity";
 
 
@@ -10,5 +11,7 @@ export class UsersService {
         @InjectRepository(User) 
         private readonly users: Repository<User>
     ){}
+
+    
 
 }

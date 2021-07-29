@@ -1,4 +1,5 @@
 import { Field, InputType, ObjectType, registerEnumType } from "@nestjs/graphql";
+import { number } from "joi";
 import { CoreEntity } from "src/common/entities/core.entity";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
@@ -24,7 +25,10 @@ export class User extends CoreEntity{
     @Field(() => String)
     password: string;
 
-    @Column( {type: 'enum', enum: UserRole})
+    // @Column('int')
+    
+    // @Column({ type: 'enum', enum: UserRole })
+    @Column('int')   // this is needed because our enum is stored in the form of number in our database
     @Field(() => UserRole)
     role: UserRole;
 }

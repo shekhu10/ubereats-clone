@@ -1,7 +1,8 @@
 import { Field, InputType, ObjectType, registerEnumType } from "@nestjs/graphql";
-import { number } from "joi";
 import { CoreEntity } from "src/common/entities/core.entity";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import * as bcrypt from 'bcrypt';
+import { InternalServerErrorException } from "@nestjs/common";
 
 // we need only 3 options for userrole
 enum UserRole {
@@ -31,4 +32,16 @@ export class User extends CoreEntity{
     @Column('int')   // this is needed because our enum is stored in the form of number in our database
     @Field(() => UserRole)
     role: UserRole;
+
+
+    @BeforeInsert()
+    async hashPassword(): Promise<void> {
+        try{
+            this.password = await bcrypt.hash(this.password, 10);
+        }
+        catch(e){
+            console.log(e);
+            throw new InternalServerErrorException();
+        }
+    }
 }

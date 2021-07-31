@@ -47,3 +47,6 @@ Now, we have the token of the user. and we need to pass this token to context of
 guard: it is a fn that will choose if you can continue your request.
 
 we can create guards for all different queries. eg-> we can have guards on login, we can have guards on creating user.
+
+flow till now:
+token is sent via http header. this token is met with middle ware. the middle ware takes the token, verifies the token, and adds the user to request object, then this request object is put inside of graphql context then our guard finds our graphql context and it looks for the user on graphql context (if user is found it returns true else false) then at the end the request has been authorised by guard, our resolver needs a decorator and the decorator looks inside the same graphql context and returns it.

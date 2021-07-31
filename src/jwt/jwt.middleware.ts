@@ -13,17 +13,17 @@ export class JwtMiddleware implements NestMiddleware {
         console.log(req.headers);
         if ("x-jwt" in req.headers){ // even if you pass capital in http header it automatically becomes small case
             const token = req.headers["x-jwt"];
-            const decoded = this.jwtService.verify(token.toString());
-            if (typeof decoded === 'object' && decoded.hasOwnProperty('id')){
-                // console.log(decoded['id']);
-                try{
+            try{
+                const decoded = this.jwtService.verify(token.toString());
+                if (typeof decoded === 'object' && decoded.hasOwnProperty('id')){
+                    // console.log(decoded['id']);
+                
                     const user = await this.userService.findById(decoded['id']);
                     // console.log(user);
                     req['user'] = user;
-                }
-                catch(e){
-                }
+                }        
             }
+            catch(e){}
         }
         next();
     }

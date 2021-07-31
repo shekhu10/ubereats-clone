@@ -1,5 +1,6 @@
 import { UseGuards } from "@nestjs/common";
 import { Resolver, Query, Mutation, Args, Context } from "@nestjs/graphql";
+import { AuthUser } from "src/auth/auth-user.decorator";
 import { AuthGuard } from "src/auth/auth.guard";
 import { createAccountInput, createAccountOutput } from "./dtos/create-account.dto";
 import { loginInput, LoginOutput } from "./dtos/login.dto";
@@ -36,20 +37,10 @@ export class UserResolver {
 
     @Query(() => User)
     @UseGuards(AuthGuard)
-    me(
-        @Context() context
-    ) {
-        // we are going to do, that if the user is logged in then give him data else error
-        // note we get context from http header, so if http header does not have token we give error
-        // currently we are having this on every resolver and we do not want to do this on every resolver
-        // so the concept of guards come here
-        if (!context.user) {
-            return ;
-        }
-        else{
-            return context.user;
-        }
-
+    me( @AuthUser() authUser: User) {
+        
+        // console.log(authUser);
+        return authUser;
     }
 
     @Mutation(() => LoginOutput)

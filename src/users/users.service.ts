@@ -9,7 +9,7 @@ import { JwtService } from "src/jwt/jwt.service";
 
 
 @Injectable()
-export class UsersService {
+export class UserService {
     constructor(
         @InjectRepository(User) 
         private readonly users: Repository<User>,
@@ -54,7 +54,7 @@ export class UsersService {
                 }
             }
             // const token = jwt.sign({id: user.id}, this.config.get('SECRET_KEY'));
-            const token = this.jwtService.sign({id: user.id});
+            const token = this.jwtService.sign(user.id);
             return {ok: true, token};
         }
         catch (error){
@@ -63,6 +63,10 @@ export class UsersService {
                 error,
             };
         }
+    }
+
+    async findById (id: number): Promise<User>{
+        return this.users.findOne({ id });
     }
 
 }

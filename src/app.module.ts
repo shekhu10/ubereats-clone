@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { UsersModule } from './users/users.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { CommonModule } from './common/common.module';
@@ -8,12 +8,16 @@ import { join } from 'path';
 import * as Joi from 'joi';
 import { User } from './users/entities/user.entity';
 import { JwtModule } from './jwt/jwt.module';
+import { JwtMiddleware } from './jwt/jwt.middleware';
+import { AuthModule } from './auth/auth.module';
 
 
 @Module({
   imports: [
     GraphQLModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      // context: ({req}) => ({potato: true}) // so this potato: true will be available to all our resolvers
+      context: ({req}) => ({user: req['user']}),
     }),
     
     ConfigModule.forRoot({
@@ -50,13 +54,23 @@ import { JwtModule } from './jwt/jwt.module';
       privateKey: process.env.PRIVATE_KEY,
     }),
     
-    UsersModule, 
-    CommonModule, 
-    
+    UsersModule,
   ],
 
   
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer){
+    consumer.apply(JwtMiddleware).forRoutes({
+      path: "/graphql",
+      method: RequestMethod.ALL,
+    });
+    // if we want to apply for all the routes and all methods -> path: "*" and method: RequestMethod.ALL
+    // we can write in path that which module to allowed to have this middle ware,
+    // and also in that module which type of request we want to apply this middleware eg post
+    // there is also a method exclude in place of forRoutes and same params.
+  }
+}
+

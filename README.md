@@ -37,3 +37,13 @@ data inside jwt token can be seen easily on jwt.io
 there are 2 types of modules
     - static modules -> that does not take any configuration like user module till now.
     - dynamic module -> that take configuratoin like forroot(), it also returns static module in the end.
+
+
+Creating a function me() which is going to return the current logged in user.
+We are also going to pass JWT token in the HTTP header in graphQL to get the current logged in user.
+Middle ware is also used to aid this. middle ware can also be used in the form of functions. but as we are using middleware to get the user using token. this means that we have to use userRepository. And for using injectable or repository we have to create middleware as a class.
+Now, we have the token of the user. and we need to pass this token to context of apollo server, because anything that is given in context is available to all the resolvers. note: context is send with every request
+
+guard: it is a fn that will choose if you can continue your request.
+
+we can create guards for all different queries. eg-> we can have guards on login, we can have guards on creating user.

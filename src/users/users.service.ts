@@ -1,11 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { BeforeUpdate, Db, Repository } from "typeorm";
 import { createAccountInput } from "./dtos/create-account.dto";
 import { loginInput } from "./dtos/login.dto";
 import { User } from "./entities/user.entity";
 import * as jwt from "jsonwebtoken";
 import { JwtService } from "src/jwt/jwt.service";
+import { EditProfileInput } from "./dtos/edit-profile.dto";
+import { EntityListenerMetadata } from "typeorm/metadata/EntityListenerMetadata";
+import { PassThrough } from "stream";
+import { IsEmail } from "class-validator";
 
 
 @Injectable()
@@ -67,6 +71,23 @@ export class UserService {
 
     async findById (id: number): Promise<User>{
         return this.users.findOne({ id });
+    }
+
+    async editProfile (userId: number, EditProfileInput: EditProfileInput){
+        console.log(EditProfileInput);
+        // return this.users.update(userId, {...EditProfileInput}); 
+        // this is very fast, this just sends the query to the db
+        // and does not checks that the row exists or not in the Db, hence it does not trigger
+        // BeforeUpdate() in the Entities, so we need to use save, save() either inserts if the row does not exists else updates the row
+        const user = await this.users.findOne(userId);
+        const { email, password } = EditProfileInput;
+        if (email){
+            user.email = email;
+        }
+        if (password) {
+            user.password = password;
+        }
+        return this.users.save(user);
     }
 
 }

@@ -10,7 +10,6 @@ export class loginInput extends PickType(User, ['email', 'password']) {}
 export class LoginOutput extends MutationOutput {
     @Field(() => String, {nullable: true})  // this means some times there will not be token passed in graphql output
     token: string;
-
 }
 
 

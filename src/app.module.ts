@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
 import * as Joi from 'joi';
 import { User } from './users/entities/user.entity';
+import { JwtModule } from './jwt/jwt.module';
 
 
 @Module({
@@ -26,6 +27,7 @@ import { User } from './users/entities/user.entity';
         DB_USERNAME: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
         DB_NAME: Joi.string().required(),
+        PRIVATE_KEY: Joi.string().required()  // it is key to sign your token
       })
 
 
@@ -44,10 +46,13 @@ import { User } from './users/entities/user.entity';
       entities: [User],
       
     }),
-    
+    JwtModule.forRoot({
+      privateKey: process.env.PRIVATE_KEY,
+    }),
     
     UsersModule, 
-    CommonModule
+    CommonModule, 
+    
   ],
 
   
